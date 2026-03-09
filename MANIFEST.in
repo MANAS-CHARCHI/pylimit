@@ -1,0 +1,2 @@
+recursive-include pylimitx *.lua
+recursive-include pylimitx *.md
