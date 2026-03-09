@@ -2,30 +2,54 @@
 
 A distributed rate-limiting solution for **FastAPI** and **Django** applications.
 
+```bash
+uv add "pylimitx[fastapi]"
+```
+
+```bash
+uv add "pylimitx[django]"
+```
+
 ## Features
 
-- Multiple Algorithms: Sliding Window (accurate) and Token Bucket (burst-friendly)
-- FastAPI Support: Middleware and decorators for FastAPI
-- Django Support: Middleware and decorators for Django
-- Distributed: Redis-backed, scales horizontally
-- Reliable: Circuit breaker pattern, fail-open safety
-- Simple: Easy to integrate, minimal configuration
-- Fast: Uses Python and Lua scripts for atomic operations with minimal round-trips to Redis.
+- **Multiple Algorithms**: Sliding Window (accurate) and Token Bucket (burst-friendly)
+- **FastAPI Support**: Middleware and decorators for FastAPI
+- **Django Support**: Middleware and decorators for Django
+- **Distributed**: Redis-backed, scales horizontally
+- **Reliable**: Circuit breaker pattern, fail-open safety
+- **Simple**: Easy to integrate, minimal configuration
+- **Fast**: Uses Python and Lua scripts for atomic operations with minimal round-trips to Redis.
 
 ---
 
-## Installation
+# Installation
 
-### FastAPI
+## With FastAPI support:
+
+### Install via UV (recommended)
 
 ```bash
-pip install pylimitx[fastapi]
+uv add "pylimitx[fastapi]"
 ```
 
-### Django
+### If use pip
 
 ```bash
-pip install pylimitx[django]
+pip install "pylimitx[fastapi]"
+```
+
+## With Django support:
+
+### Install via UV (recommended)
+
+```bash
+uv add "pylimitx[django]"
+```
+
+### If use pip
+
+```bash
+pip install "pylimitx[django]"
 ```
 
 ---

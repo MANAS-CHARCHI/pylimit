@@ -1,7 +1,7 @@
 [project]
 name = "pylimitx"
 version = "0.1.0"
-description = "Add your description here"
+description = "Distributed rate limiting for FastAPI and Django with Redis backend. Built with love for scalable systems."
 readme = "README.md"
 requires-python = ">=3.11"
 
