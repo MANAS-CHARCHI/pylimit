@@ -72,23 +72,45 @@ def _sync_wrapper(
     limit, window, algorithm,
     bucket_capacity, refill_rate,
 ):
-    loop   = asyncio.new_event_loop()
     try:
-        result = loop.run_until_complete(
-            limiter.check(
-                namespace        = namespace,
-                identifier       = identifier,
-                limit            = limit,
-                window           = window,
-                algorithm        = algorithm,
-                bucket_capacity  = bucket_capacity,
-                refill_rate      = refill_rate,
+        # Try to use the existing event loop from pytest-asyncio if available
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = None
+        
+        if loop and loop.is_closed():
+            loop = None
+        
+        if loop:
+            # Reuse the existing loop
+            result = loop.run_until_complete(
+                limiter.check(
+                    namespace        = namespace,
+                    identifier       = identifier,
+                    limit            = limit,
+                    window           = window,
+                    algorithm        = algorithm,
+                    bucket_capacity  = bucket_capacity,
+                    refill_rate      = refill_rate,
+                )
             )
-        )
+        else:
+            # Create a fresh loop
+            result = asyncio.run(
+                limiter.check(
+                    namespace        = namespace,
+                    identifier       = identifier,
+                    limit            = limit,
+                    window           = window,
+                    algorithm        = algorithm,
+                    bucket_capacity  = bucket_capacity,
+                    refill_rate      = refill_rate,
+                )
+            )
+        
     except RateLimitExceeded as e:
         return _build_429(e)
-    finally:
-        loop.close()
 
     response = func(request, *args, **kwargs)
     _set_headers(response, result.remaining, limit)

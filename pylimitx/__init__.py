@@ -10,8 +10,9 @@ except ImportError:
     pass
 
 try:
-    from pylimitx.integrations.django.decorator  import django_rate_limit
-    from pylimitx.integrations.django.middleware import DjangoRateLimitMiddleware
+    from pylimitx.integrations.django.decorator      import django_rate_limit
+    from pylimitx.integrations.django.middleware     import DjangoRateLimitMiddleware
+    from pylimitx.integrations.django.ready_middleware import RateLimitMiddleware as DjangoReadyMiddleware
 except ImportError:
     pass
 
@@ -22,4 +23,5 @@ __all__ = [
     "RateLimitMiddleware",
     "django_rate_limit",
     "DjangoRateLimitMiddleware",
+    "DjangoReadyMiddleware",
 ]

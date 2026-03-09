@@ -1,6 +1,7 @@
 import asyncio, inspect
 
 from django.http            import JsonResponse
+from django.conf            import settings
 from django.utils.decorators import sync_and_async_middleware
 
 from redis.asyncio import Redis
@@ -12,9 +13,9 @@ class DjangoRateLimitMiddleware:
     def __init__(
             self, 
             get_response, 
-            redis_url: str, 
-            limit: int, 
-            window: int,
+            redis_url: str = None, 
+            limit: int = None, 
+            window: int = None,
             algorithm: str = "sliding_window", 
             bucket_capacity: int = None,
             refill_rate: float = None, 
@@ -22,6 +23,12 @@ class DjangoRateLimitMiddleware:
             failure_threshold: int = 3, 
             recovery_timeout: int = 30
     ):
+        # Read from Django settings if not provided
+        config = getattr(settings, 'RATE_LIMIT_CONFIG', {})
+        redis_url = redis_url or config.get('REDIS_URL', 'redis://localhost:6379')
+        limit = limit or config.get('LIMIT', 100)
+        window = window or config.get('WINDOW', 60)
+        
         self.get_response    = get_response
         self.limit           = limit
         self.window          = window
@@ -43,9 +50,31 @@ class DjangoRateLimitMiddleware:
         return self._sync_call(request)
 
     def _sync_call(self, request):
-        loop   = asyncio.new_event_loop()
-        result = loop.run_until_complete(self._check(request))
-        loop.close()
+        try:
+            # Try to use the existing event loop from pytest-asyncio if available
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = None
+            
+            if loop and loop.is_closed():
+                loop = None
+            
+            if loop:
+                # Reuse the existing loop
+                result = loop.run_until_complete(self._check(request))
+            else:
+                # Create a fresh loop with asyncio.run
+                result = asyncio.run(self._check(request))
+        except Exception:
+            # If event loop management fails, handle gracefully
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                result = loop.run_until_complete(self._check(request))
+            finally:
+                loop.close()
+                asyncio.set_event_loop(None)
 
         if isinstance(result, JsonResponse):
             return result

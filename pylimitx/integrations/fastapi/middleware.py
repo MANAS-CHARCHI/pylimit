@@ -48,7 +48,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 refill_rate      = self.refill_rate,
             )
             response = await call_next(request)
-            self._set_headers(response, result.remaining)
+            # Don't overwrite headers if response is already a 429 from decorator
+            if response.status_code != 429:
+                self._set_headers(response, result.remaining)
             return response
         except RateLimitExceeded as e:
             return self._build_429(e)
