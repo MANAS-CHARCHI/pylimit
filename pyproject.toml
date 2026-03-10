@@ -1,9 +1,18 @@
 [project]
 name = "pylimitx"
-version = "0.1.2"
+version = "0.1.3"
 description = "Distributed rate limiting for FastAPI and Django with Redis backend. Built with love for scalable systems."
 readme = "README.md"
 requires-python = ">=3.11"
+
+keywords = [
+  "rate limiting",
+  "api rate limit",
+  "fastapi rate limiting",
+  "django rate limiting",
+  "redis rate limiter",
+  "distributed rate limiter"
+]
 
 dependencies = [
     "redis>=7.3.0",
