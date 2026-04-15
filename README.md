@@ -1,5 +1,6 @@
 # Pylimitx - Distributed Rate Limiting for Python
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/pylimitx?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/pylimitx)
+
 A distributed rate-limiting solution for **FastAPI** and **Django** applications.
 
 ```bash
